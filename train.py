@@ -72,7 +72,7 @@ def main(config: DictConfig):
         str(Path(config.ckpt_path).parents[1].absolute())
     trainer: Trainer = hydra.utils.instantiate(config.trainer, logger=TensorBoardLogger(cwd, '', '.'),
                                                strategy=trainer_strategy, enable_model_summary=False,
-                                               callbacks=[checkpoint, swa], accelerator='cpu')
+                                               callbacks=[checkpoint, swa], accelerator='gpu')
     trainer.fit(model, datamodule=datamodule, ckpt_path=config.ckpt_path)
 
 
