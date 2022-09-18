@@ -2,7 +2,7 @@ defaults:
   - _self_
   - model: parseq
   - charset: 54_sin_analog_2
-  - dataset: sin_printed_2
+  - dataset: sin_hw_2
 
 model:
   _convert_: all
@@ -33,7 +33,7 @@ data:
 trainer:
   _target_: pytorch_lightning.Trainer
   _convert_: all
-  val_check_interval: 30
+  val_check_interval: 10
   #max_steps: 169680  # 20 epochs x 8484 steps (for batch size = 384, real data)
   max_epochs: 20
   gradient_clip_val: 20
