@@ -17,7 +17,7 @@ from pathlib import PurePath
 from typing import Optional, Callable, Sequence, Tuple
 
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from torchvision import transforms as T
 
 from .dataset import build_tree_dataset, LmdbDataset
@@ -48,8 +48,13 @@ class SceneTextDataModule(pl.LightningDataModule):
         self.min_image_dim = min_image_dim
         self.rotation = rotation
         self.collate_fn = collate_fn
-        self._train_dataset = None
-        self._val_dataset = None
+        transform = self.get_transform(self.img_size, self.augment)
+        root = PurePath(self.root_dir, 'train', self.train_dir)
+        temp_dataset = build_tree_dataset(root, self.charset_train, self.max_label_length,
+                                                    self.min_image_dim, self.remove_whitespace, self.normalize_unicode,
+                                                    transform=transform)
+        dataset_len = len(temp_dataset)
+        self._train_dataset, self._val_dataset = random_split(temp_dataset, [dataset_len // 5, dataset_len - dataset_len // 5])
 
     @staticmethod
     def get_transform(img_size: Tuple[int], augment: bool = False, rotation: int = 0):
