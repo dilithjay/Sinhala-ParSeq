@@ -53,8 +53,8 @@ class SceneTextDataModule(pl.LightningDataModule):
         temp_dataset = build_tree_dataset(root, self.charset_train, self.max_label_length,
                                                     self.min_image_dim, self.remove_whitespace, self.normalize_unicode,
                                                     transform=transform)
-        dataset_len = len(temp_dataset)
-        self._train_dataset, self._val_dataset = random_split(temp_dataset, [dataset_len // 5, dataset_len - dataset_len // 5])
+        # dataset_len = len(temp_dataset)
+        # self._train_dataset, self._val_dataset = random_split(temp_dataset, [dataset_len // 5, dataset_len - dataset_len // 5])
 
     @staticmethod
     def get_transform(img_size: Tuple[int], augment: bool = False, rotation: int = 0):
