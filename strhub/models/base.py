@@ -86,7 +86,7 @@ class BaseSystem(pl.LightningModule, ABC):
         agb = self.trainer.accumulate_grad_batches
         # Linear scaling so that the effective learning rate is constant regardless of the number of GPUs used with DDP.
         lr_scale = agb * math.sqrt(self.trainer.num_devices) * self.batch_size / 256.
-        lr = lr_scale * self.lr
+        lr = lr_scale * float(self.lr)
         optim = create_optimizer_v2(self, 'adamw', lr, self.weight_decay)
         sched = OneCycleLR(optim, lr, self.trainer.estimated_stepping_batches, pct_start=self.warmup_pct,
                            cycle_momentum=False)
