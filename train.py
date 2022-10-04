@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from pathlib import Path
 
 from omegaconf import DictConfig, open_dict
@@ -22,7 +23,7 @@ from hydra.core.hydra_config import HydraConfig
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, StochasticWeightAveraging
-from pytorch_lightning.loggers import TensorBoardLogger
+from pytorch_lightning.loggers import TensorBoardLogger, NeptuneLogger
 from pytorch_lightning.strategies import DDPStrategy
 from pytorch_lightning.utilities.model_summary import summarize
 
@@ -70,7 +71,17 @@ def main(config: DictConfig):
     swa = StochasticWeightAveraging(swa_epoch_start=0.75)
     cwd = HydraConfig.get().runtime.output_dir if config.ckpt_path is None else \
         str(Path(config.ckpt_path).parents[1].absolute())
-    trainer: Trainer = hydra.utils.instantiate(config.trainer, logger=TensorBoardLogger(cwd, '', '.'),
+    
+    neptune_api_key = os.environ.get('NEPT_API_KEY')
+    if neptune_api_key:
+        logger = NeptuneLogger(
+            project="dilithjay/DocumentAI",
+            api_token=neptune_api_key,
+        )
+    else:
+        logger = TensorBoardLogger(cwd, '', '.')
+    
+    trainer: Trainer = hydra.utils.instantiate(config.trainer, logger=logger,
                                                strategy=trainer_strategy, enable_model_summary=False,
                                                callbacks=[checkpoint, swa], accelerator='gpu', log_every_n_steps=10)
     trainer.fit(model, datamodule=datamodule, ckpt_path=config.ckpt_path)

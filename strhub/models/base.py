@@ -154,10 +154,10 @@ class BaseSystem(pl.LightningModule, ABC):
 
     def validation_epoch_end(self, outputs: EPOCH_OUTPUT) -> None:
         acc, ned, loss = self._aggregate_results(outputs)
-        self.log('val_accuracy', 100 * acc, sync_dist=True)
-        self.log('val_NED', 100 * ned, sync_dist=True)
-        self.log('val_loss', loss, sync_dist=True)
-        self.log('hp_metric', acc, sync_dist=True)
+        self.log('val/acc', 100 * acc, sync_dist=True)
+        self.log('val/NED', 100 * ned, sync_dist=True)
+        self.log('val/loss', loss, sync_dist=True)
+        # self.log('hp_metric', acc, sync_dist=True)
 
     def test_step(self, batch, batch_idx) -> Optional[STEP_OUTPUT]:
         return self._eval_step(batch, False)
