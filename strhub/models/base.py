@@ -122,9 +122,10 @@ class BaseSystem(pl.LightningModule, ABC):
             pred = self.charset_adapter(pred)
             # Follow ICDAR 2019 definition of N.E.D.
             ned += edit_distance(pred, gt) / max(len(pred), len(gt))
-            if pred == gt:
-                correct += 1
-            total += 1
+            for i in range(min(len(pred), len(gt))):
+                if pred[i] == gt[i]:
+                    correct += 1
+            total += max(len(pred), len(gt))
             label_length += len(pred)
         return dict(output=BatchResult(total, correct, ned, confidence, label_length, loss, loss_numel))
 
