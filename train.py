@@ -77,6 +77,7 @@ def main(config: DictConfig):
         logger = NeptuneLogger(
             project="dilithjay/DocumentAI",
             api_token=neptune_api_key,
+            log_model_checkpoints=False
         )
     else:
         logger = TensorBoardLogger(cwd, '', '.')
