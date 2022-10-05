@@ -66,7 +66,7 @@ def main(config: DictConfig):
 
     datamodule: SceneTextDataModule = hydra.utils.instantiate(config.data)
 
-    checkpoint = ModelCheckpoint(monitor='val/acc', mode='max', save_top_k=3, save_last=True,
+    checkpoint = ModelCheckpoint(dirpath='', monitor='val/acc', mode='max', save_top_k=3, save_last=True,
                                  filename='{epoch}-{step}-{val/acc:.4f}-{val/NED:.4f}')
     swa = StochasticWeightAveraging(swa_epoch_start=0.75)
     cwd = HydraConfig.get().runtime.output_dir if config.ckpt_path is None else \
@@ -77,6 +77,7 @@ def main(config: DictConfig):
         logger = NeptuneLogger(
             project="dilithjay/DocumentAI",
             api_token=neptune_api_key,
+            log_model_checkpoints=False
         )
     else:
         logger = TensorBoardLogger(cwd, '', '.')
@@ -85,6 +86,7 @@ def main(config: DictConfig):
                                                strategy=trainer_strategy, enable_model_summary=False,
                                                callbacks=[checkpoint, swa], accelerator='gpu', log_every_n_steps=10)
     trainer.fit(model, datamodule=datamodule, ckpt_path=config.ckpt_path)
+    print(f'Best model: {checkpoint.best_model_path}\nBest model score: {checkpoint.best_model_score}')
 
 
 if __name__ == '__main__':
