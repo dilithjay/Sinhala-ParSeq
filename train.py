@@ -69,7 +69,7 @@ def main(config: DictConfig):
     datamodule: SceneTextDataModule = hydra.utils.instantiate(config.data)
 
     checkpoint = ModelCheckpoint(f'outputs/{datetime.fromtimestamp(time()).strftime("%Y-%m-%d_%H_%M_%S")}',
-                                 monitor='val/acc', mode='max', save_top_k=3, save_last=True,
+                                 monitor='val/acc', mode='max', save_top_k=1, save_last=True,
                                  filename='{epoch}-{step}-{val/acc:.4f}-{val/NED:.4f}')
     swa = StochasticWeightAveraging(swa_epoch_start=0.75)
     cwd = HydraConfig.get().runtime.output_dir if config.ckpt_path is None else \
