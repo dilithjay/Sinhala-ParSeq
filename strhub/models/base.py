@@ -181,7 +181,7 @@ class CrossEntropySystem(BaseSystem):
         logits = self.forward(images, max_len)
         loss = F.cross_entropy(logits.flatten(end_dim=1), targets.flatten(), ignore_index=self.pad_id)
         loss_numel = (targets != self.pad_id).sum()
-        print(self.calc_accuracy(logits.flatten(end_dim=1), targets.flatten()))
+        # print(self.calc_accuracy(logits.flatten(end_dim=1), targets.flatten()))
         return logits, loss, loss_numel
     
     def calc_accuracy(self, output, target):
